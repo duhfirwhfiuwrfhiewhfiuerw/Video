@@ -385,10 +385,13 @@ border-top-width: 100px;
 
 <!-- 영상 -->
 <div class="video-frame">
-  <video id="mainVideo" controls playsinline>
-    <source src="_talkv_wzLoAf21tX_8iVyiVuNICyfwzkdZdkLxk_talkv_high.mp4" type="video/mp4">
-    영상을 재생할 수 없어요.
-  </video>
+  <iframe id="mainVideo"
+    width="100%"
+    style="aspect-ratio:16/9;border:none;display:block;"
+    src="https://www.youtube.com/embed/sSxFSPvUozw?enablejsapi=1"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    allowfullscreen>
+  </iframe>
 </div>
 
 <!-- 하단 픽셀 캐릭터 띠 -->
