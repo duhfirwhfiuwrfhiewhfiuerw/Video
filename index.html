@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💌 편지가 도착했어요</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&family=Poor+Story&display=swap');
+
+:root {
+–cream: #fff8f0;
+–pink: #ffb7c5;
+–peach: #ffd4a3;
+–mint: #b5ead7;
+–lavender: #c9b4e8;
+–brown: #8b6f5e;
+–dark: #3a2e2a;
+–yellow: #fff0a0;
+}
+
+- { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+background: var(–cream);
+font-family: ‘Poor Story’, cursive;
+overflow-x: hidden;
+min-height: 100vh;
+}
+
+/* ─── 배경 패턴 ─── */
+body::before {
+content: ‘’;
+position: fixed;
+inset: 0;
+background-image:
+radial-gradient(circle at 20% 20%, #ffd4a340 0%, transparent 50%),
+radial-gradient(circle at 80% 80%, #c9b4e840 0%, transparent 50%),
+radial-gradient(circle at 50% 50%, #b5ead730 0%, transparent 60%);
+pointer-events: none;
+z-index: 0;
+}
+
+/* ─── 별/하트 떠다니기 ─── */
+.floaty {
+position: fixed;
+font-size: 1.2rem;
+animation: floatUp linear infinite;
+pointer-events: none;
+z-index: 1;
+opacity: 0.5;
+}
+@keyframes floatUp {
+0%   { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+10%  { opacity: 0.6; }
+90%  { opacity: 0.4; }
+100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+}
+
+/* ─── 메인 래퍼 ─── */
+.page {
+position: relative;
+z-index: 2;
+display: flex;
+flex-direction: column;
+align-items: center;
+padding: 40px 20px 60px;
+min-height: 100vh;
+}
+
+/* ─── 제목 ─── */
+.title {
+font-family: ‘Nanum Pen Script’, cursive;
+font-size: clamp(2rem, 5vw, 3.5rem);
+color: var(–brown);
+text-align: center;
+margin-bottom: 10px;
+animation: fadeDown 0.8s ease both;
+text-shadow: 2px 2px 0 var(–pink);
+}
+.subtitle {
+font-size: 1rem;
+color: #a08070;
+margin-bottom: 36px;
+animation: fadeDown 0.9s ease both;
+letter-spacing: 0.05em;
+}
+@keyframes fadeDown {
+from { opacity: 0; transform: translateY(-20px); }
+to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ══════════════════════════════
+ENVELOPE
+══════════════════════════════ */
+.envelope-wrap {
+perspective: 1200px;
+margin-bottom: 50px;
+animation: fadeDown 1s ease 0.2s both;
+}
+
+.envelope {
+position: relative;
+width: clamp(280px, 80vw, 520px);
+cursor: pointer;
+transform-style: preserve-3d;
+transition: transform 0.3s;
+}
+.envelope:hover { transform: scale(1.02) translateY(-4px); }
+
+/* 봉투 몸체 */
+.env-body {
+background: linear-gradient(160deg, #fff0e0, #ffe4d0);
+border: 3px solid var(–brown);
+border-radius: 4px 4px 12px 12px;
+padding: 32px 32px 28px;
+position: relative;
+box-shadow: 6px 8px 0 #c8a090, 0 20px 50px rgba(0,0,0,0.12);
+}
+
+/* 봉투 플랩 (삼각형 뚜껑) */
+.env-flap {
+position: absolute;
+top: 0; left: 0; right: 0;
+height: 0;
+border-left: calc(clamp(280px, 80vw, 520px)/2) solid transparent;
+border-right: calc(clamp(280px, 80vw, 520px)/2) solid transparent;
+border-top: 140px solid #f5c8a8;
+transform-origin: top center;
+transition: transform 0.7s cubic-bezier(0.68,-0.55,0.27,1.55);
+filter: drop-shadow(0 3px 2px rgba(0,0,0,0.1));
+z-index: 5;
+border-radius: 0;
+}
+.envelope.opened .env-flap {
+transform: rotateX(180deg);
+}
+
+/* 봉투 내용 (열리기 전) */
+.env-inner {
+text-align: center;
+padding: 20px 0 0;
+}
+.env-seal {
+width: 64px; height: 64px;
+background: var(–pink);
+border: 3px solid var(–brown);
+border-radius: 50%;
+margin: 0 auto 16px;
+display: flex; align-items: center; justify-content: center;
+font-size: 2rem;
+box-shadow: 3px 3px 0 #c0607a;
+transition: transform 0.3s;
+}
+.envelope:hover .env-seal { transform: rotate(15deg) scale(1.1); }
+
+.env-text {
+font-family: ‘Nanum Pen Script’, cursive;
+font-size: 1.4rem;
+color: var(–brown);
+line-height: 1.6;
+margin-bottom: 20px;
+}
+
+.open-btn {
+display: inline-block;
+background: var(–pink);
+color: var(–dark);
+border: 3px solid var(–brown);
+border-radius: 30px;
+padding: 10px 28px;
+font-family: ‘Poor Story’, cursive;
+font-size: 1.1rem;
+cursor: pointer;
+box-shadow: 4px 4px 0 var(–brown);
+transition: all 0.2s;
+position: relative; z-index: 10;
+}
+.open-btn:hover {
+transform: translate(-2px, -2px);
+box-shadow: 6px 6px 0 var(–brown);
+background: #ffc8d5;
+}
+.open-btn:active {
+transform: translate(2px, 2px);
+box-shadow: 2px 2px 0 var(–brown);
+}
+
+/* ══════════════════════════════
+VIDEO SECTION
+══════════════════════════════ */
+.video-section {
+display: none;
+flex-direction: column;
+align-items: center;
+animation: popIn 0.6s cubic-bezier(0.34,1.56,0.64,1) both;
+width: 100%;
+max-width: 700px;
+}
+.video-section.show { display: flex; }
+
+@keyframes popIn {
+from { opacity: 0; transform: scale(0.7) translateY(30px); }
+to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* 픽셀 동물 띠 - 상단 */
+.pixel-band {
+width: 100%;
+background: var(–mint);
+border: 3px solid var(–dark);
+border-bottom: none;
+padding: 12px 0 8px;
+display: flex;
+justify-content: space-around;
+align-items: flex-end;
+flex-wrap: wrap;
+gap: 4px;
+border-radius: 12px 12px 0 0;
+position: relative;
+overflow: hidden;
+}
+.pixel-band.bottom {
+border-top: none;
+border-bottom: 3px solid var(–dark);
+border-radius: 0 0 12px 12px;
+background: var(–lavender);
+align-items: flex-start;
+padding: 8px 0 12px;
+}
+
+/* ─── 픽셀 캐릭터들 (CSS art) ─── */
+.pixel-char {
+image-rendering: pixelated;
+display: inline-block;
+animation: bounce 1s ease-in-out infinite alternate;
+}
+.pixel-char:nth-child(2n) { animation-delay: 0.2s; }
+.pixel-char:nth-child(3n) { animation-delay: 0.4s; }
+.pixel-char:nth-child(4n) { animation-delay: 0.6s; }
+@keyframes bounce {
+from { transform: translateY(0); }
+to   { transform: translateY(-8px); }
+}
+
+/* 픽셀 캐릭터를 canvas로 그릴 영역 */
+canvas.pxc {
+image-rendering: pixelated;
+}
+
+/* 비디오 프레임 */
+.video-frame {
+width: 100%;
+background: #1a1a1a;
+border-left: 3px solid var(–dark);
+border-right: 3px solid var(–dark);
+padding: 8px;
+display: flex;
+justify-content: center;
+}
+.video-frame video {
+width: 100%;
+max-width: 660px;
+display: block;
+border: 2px solid #444;
+}
+
+/* 편지지 메시지 */
+.letter-paper {
+background: var(–yellow);
+border: 3px solid var(–brown);
+border-top: none;
+width: 100%;
+padding: 22px 28px;
+border-radius: 0 0 12px 12px;
+box-shadow: 5px 8px 0 #c8a090;
+}
+.letter-paper p {
+font-family: ‘Nanum Pen Script’, cursive;
+font-size: 1.3rem;
+color: var(–brown);
+line-height: 1.9;
+text-align: center;
+}
+
+/* 워블 텍스트 효과 */
+.wobble span {
+display: inline-block;
+animation: wobbleChar 2s ease-in-out infinite;
+}
+.wobble span:nth-child(1)  { animation-delay: 0.0s; }
+.wobble span:nth-child(2)  { animation-delay: 0.1s; }
+.wobble span:nth-child(3)  { animation-delay: 0.2s; }
+.wobble span:nth-child(4)  { animation-delay: 0.3s; }
+.wobble span:nth-child(5)  { animation-delay: 0.4s; }
+.wobble span:nth-child(6)  { animation-delay: 0.5s; }
+.wobble span:nth-child(7)  { animation-delay: 0.6s; }
+.wobble span:nth-child(8)  { animation-delay: 0.7s; }
+@keyframes wobbleChar {
+0%,100% { transform: translateY(0); }
+50%      { transform: translateY(-5px); }
+}
+
+/* 뒤로가기 버튼 */
+.back-btn {
+margin-top: 24px;
+background: white;
+border: 3px solid var(–brown);
+border-radius: 30px;
+padding: 8px 22px;
+font-family: ‘Poor Story’, cursive;
+font-size: 1rem;
+color: var(–brown);
+cursor: pointer;
+box-shadow: 3px 3px 0 var(–brown);
+transition: all 0.2s;
+}
+.back-btn:hover {
+transform: translate(-2px,-2px);
+box-shadow: 5px 5px 0 var(–brown);
+}
+
+/* 하단 장식 */
+.footer-deco {
+margin-top: 40px;
+font-size: 1.8rem;
+opacity: 0.5;
+letter-spacing: 0.3em;
+animation: fadeDown 1.2s ease 0.5s both;
+}
+
+/* ─── 반응형 ─── */
+@media (max-width: 480px) {
+.env-flap {
+border-left-width: calc(min(80vw,520px)/2);
+border-right-width: calc(min(80vw,520px)/2);
+border-top-width: 100px;
+}
+}
+</style>
+
+</head>
+<body>
+
+<!-- 떠다니는 꾸밈 요소 -->
+
+<div class="floaty" style="left:5%;animation-duration:9s;animation-delay:0s;">🌸</div>
+<div class="floaty" style="left:15%;animation-duration:12s;animation-delay:2s;">⭐</div>
+<div class="floaty" style="left:30%;animation-duration:8s;animation-delay:4s;">🌷</div>
+<div class="floaty" style="left:50%;animation-duration:11s;animation-delay:1s;">💫</div>
+<div class="floaty" style="left:65%;animation-duration:10s;animation-delay:3s;">🍀</div>
+<div class="floaty" style="left:78%;animation-duration:7s;animation-delay:5s;">🌼</div>
+<div class="floaty" style="left:90%;animation-duration:13s;animation-delay:0.5s;">✨</div>
+
+<div class="page">
+  <h1 class="title">💌 편지가 도착했어요</h1>
+  <p class="subtitle">살며시 열어봐요 ✉️</p>
+
+  <!-- 봉투 -->
+
+  <div class="envelope-wrap" id="envWrap">
+    <div class="envelope" id="envelope">
+      <div class="env-flap" id="envFlap"></div>
+      <div class="env-body">
+        <div class="env-inner">
+          <div class="env-seal">💌</div>
+          <p class="env-text">
+            소중한 당신에게<br>
+            전하고 싶은 마음을 담았어요 🌸<br>
+            <small style="font-size:0.9rem;opacity:0.7;">편지를 열어보면 깜짝 선물이!</small>
+          </p>
+          <button class="open-btn" id="openBtn">✉️ 편지 열기</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 영상 섹션 -->
+
+  <div class="video-section" id="videoSection">
+
+```
+<!-- 상단 픽셀 동물 띠 -->
+<div class="pixel-band" id="topBand"></div>
+
+<!-- 영상 -->
+<div class="video-frame">
+  <video id="mainVideo" controls playsinline>
+    <source src="_talkv_wzLoAf21tX_8iVyiVuNICyfwzkdZdkLxk_talkv_high.mp4" type="video/mp4">
+    영상을 재생할 수 없어요.
+  </video>
+</div>
+
+<!-- 하단 픽셀 캐릭터 띠 -->
+<div class="pixel-band bottom" id="botBand"></div>
+
+<!-- 편지 메시지 -->
+<div class="letter-paper">
+  <p class="wobble">
+    <span>보</span><span>고</span><span>싶</span><span>었</span><span>어</span><span>요</span><span>~</span><span>💕</span>
+  </p>
+  <p style="font-size:1.1rem;margin-top:10px;">이 영상 담아두고 가끔 꺼내봐요 🌷<br>당신이 있어 참 다행이에요 ☺️</p>
+</div>
+
+<button class="back-btn" id="backBtn">← 봉투로 돌아가기</button>
+```
+
+  </div>
+
+  <div class="footer-deco">🌸 ⭐ 🌿 ⭐ 🌸</div>
+</div>
+
+<script>
+/* ════════════════════════════
+   픽셀 캐릭터 그리기 (Canvas)
+════════════════════════════ */
+const SCALE = 3; // 픽셀 크기
+
+// 색상 팔레트
+const P = {
+  _: null,          // 투명
+  W: '#ffffff',     // 흰
+  K: '#222222',     // 검정
+  R: '#ff6b6b',     // 빨강
+  O: '#ffa94d',     // 주황
+  Y: '#ffe066',     // 노랑
+  G: '#69db7c',     // 초록
+  B: '#74c0fc',     // 파랑
+  N: '#c8956c',     // 갈색
+  n: '#e8c9a0',     // 연갈색
+  P: '#e599f7',     // 보라
+  k: '#555555',     // 회색
+  p: '#ffb7c5',     // 핑크
+  M: '#f5c2e7',     // 연핑크
+  T: '#8b4513',     // 진갈색
+};
+
+// 픽셀 맵 정의 (각 행 = 색상 키 배열)
+const CHARS = {
+  // 🐱 고양이
+  cat: {
+    w: 11, h: 12,
+    map: [
+      '_KKKK_KKKK_',
+      'KWWWKWWWWWK',
+      'KWoWKWoWWWK',
+      'KWWWKWWWWWK',
+      '_KKWKKWWWK_',
+      '__KWWWWWkK_',
+      '_KWWpWWWWK_',
+      '_KWWWWWnWK_',
+      '_KWNWWWnWK_',
+      '__KWWkWWK__',
+      '__KKK_KKK__',
+      '___________',
+    ],
+  },
+  // 🐶 강아지
+  dog: {
+    w: 13, h: 12,
+    map: [
+      'KK_________',
+      'KnK__KK____',
+      'KnnKKnnK___',
+      '_KnnnnnnK__',
+      '_KnoWnoWnK_',
+      '_KnnnnnnnK_',
+      '__KnRnnnK__',
+      '__KnnnnnK__',
+      '__KKnnnKK__',
+      '__KK_KKK___',
+      '___________',
+      '___________',
+    ],
+  },
+  // 🐰 토끼
+  bunny: {
+    w: 9, h: 13,
+    map: [
+      '_KK_KK___',
+      'KWWKKpK__',
+      'KWWKKpK__',
+      'KWWWWWWK_',
+      'KWoKKoWK_',
+      'KWWWWWWK_',
+      '_KWRWWK__',
+      '_KWWWWK__',
+      '_KKKKKK__',
+      '_K___KK__',
+      'KK___KK__',
+      '_________',
+      '_________',
+    ],
+  },
+  // 🌟 별
+  star: {
+    w: 9, h: 9,
+    map: [
+      '____Y____',
+      '___YYY___',
+      'YYYYYYYYY',
+      '_YYYYYYY_',
+      '__YYYYY__',
+      '_YYYYYYY_',
+      'Y__YYY__Y',
+      '___YYY___',
+      '____Y____',
+    ],
+  },
+  // 🌸 꽃
+  flower: {
+    w: 9, h: 9,
+    map: [
+      '_ppp_ppp_',
+      'ppppYpppp',
+      'ppYYYYYpp',
+      '_pYYYYYp_',
+      '__YYYYY__',
+      '_pYYYYYp_',
+      'ppYYYYYpp',
+      'ppppGpppp',
+      '___GGG___',
+    ],
+  },
+  // 🐸 개구리
+  frog: {
+    w: 11, h: 10,
+    map: [
+      'KGK_____KGK',
+      'KGGK___KGGK',
+      '_KGGGGGGGK_',
+      '_KGWKKWGkK_',
+      '_KGGGGGGkK_',
+      '_KGGRGGkKK_',
+      '_KKGGGGkK__',
+      '__KGGGGkK__',
+      '__KKGKKkK__',
+      '___K___K___',
+    ],
+  },
+  // 🐻 곰
+  bear: {
+    w: 11, h: 11,
+    map: [
+      '_KK___KK___',
+      'KNNKKKNNk__',
+      'KNNNNNNNk__',
+      'KNoKKoNNk__',
+      'KNNNNNNNk__',
+      '_KNRNNNk___',
+      '_KNNNNNk___',
+      '_KKNNNKk___',
+      '__KNNK_____',
+      '__K__K_____',
+      '___________',
+    ],
+  },
+  // ✨ 반짝이
+  sparkle: {
+    w: 7, h: 7,
+    map: [
+      '___Y___',
+      '__YYY__',
+      '_YYYYY_',
+      'YYYYYYY',
+      '_YYYYY_',
+      '__YYY__',
+      '___Y___',
+    ],
+  },
+  // 🍄 버섯
+  shroom: {
+    w: 9, h: 9,
+    map: [
+      '___RRR___',
+      '_RRWWWRR_',
+      'RRRRWRRRR',
+      'RRRRRRRRR',
+      '_RRRRRRR_',
+      '__nnnnn__',
+      '__nnnnn__',
+      '__nnnnn__',
+      '___nnn___',
+    ],
+  },
+};
+
+function drawChar(ctx, charKey, x, y) {
+  const c = CHARS[charKey];
+  if (!c) return;
+  c.map.forEach((row, ri) => {
+    [...row].forEach((ch, ci) => {
+      const color = P[ch];
+      if (!color) return;
+      ctx.fillStyle = color;
+      ctx.fillRect(x + ci * SCALE, y + ri * SCALE, SCALE, SCALE);
+    });
+  });
+}
+
+function charW(charKey) { return CHARS[charKey] ? CHARS[charKey].w * SCALE : 0; }
+function charH(charKey) { return CHARS[charKey] ? CHARS[charKey].h * SCALE : 0; }
+
+function buildBand(containerId, keys, bgColor) {
+  const band = document.getElementById(containerId);
+  if (!band) return;
+
+  const bandH = 14 * SCALE + 8; // 충분한 높이
+  const totalW = band.offsetWidth || 660;
+
+  const canvas = document.createElement('canvas');
+  canvas.width = totalW;
+  canvas.height = bandH;
+  canvas.style.width = '100%';
+  canvas.style.height = bandH + 'px';
+  canvas.style.display = 'block';
+  canvas.style.imageRendering = 'pixelated';
+  band.innerHTML = '';
+  band.appendChild(canvas);
+  band.style.padding = '0';
+  band.style.overflow = 'hidden';
+  band.style.minHeight = bandH + 'px';
+
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, totalW, bandH);
+
+  // 반복해서 채우기
+  let x = 4;
+  let idx = 0;
+  while (x < totalW - 10) {
+    const key = keys[idx % keys.length];
+    const h = charH(key);
+    const y = bandH - h - 2;
+    drawChar(ctx, key, x, y);
+    x += charW(key) + 6;
+    idx++;
+  }
+
+  // 캔버스 애니메이션 (좌우로 살짝 흔들기)
+  let t = 0;
+  function animate() {
+    ctx.clearRect(0, 0, totalW, bandH);
+    let cx = 4;
+    let ci = 0;
+    while (cx < totalW - 10) {
+      const key = keys[ci % keys.length];
+      const h = charH(key);
+      const dy = Math.sin(t + ci * 0.5) * 3;
+      const y = bandH - h - 2 + dy;
+      drawChar(ctx, key, cx, y);
+      cx += charW(key) + 6;
+      ci++;
+    }
+    t += 0.07;
+    requestAnimationFrame(animate);
+  }
+  animate();
+}
+
+/* ════════════════════════════
+   인터랙션 로직
+════════════════════════════ */
+const openBtn = document.getElementById('openBtn');
+const backBtn = document.getElementById('backBtn');
+const envelope = document.getElementById('envelope');
+const envWrap  = document.getElementById('envWrap');
+const videoSec = document.getElementById('videoSection');
+const mainVid  = document.getElementById('mainVideo');
+
+let bandsBuilt = false;
+
+openBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  // 봉투 열기 애니메이션
+  envelope.classList.add('opened');
+  setTimeout(() => {
+    envWrap.style.display = 'none';
+    videoSec.classList.add('show');
+    if (!bandsBuilt) {
+      buildBand('topBand', ['cat','bunny','star','flower','sparkle','frog'], '#b5ead7');
+      buildBand('botBand', ['bear','dog','shroom','sparkle','flower','star'], '#c9b4e8');
+      bandsBuilt = true;
+    }
+    setTimeout(() => mainVid.play().catch(()=>{}), 300);
+  }, 700);
+});
+
+backBtn.addEventListener('click', () => {
+  mainVid.pause();
+  videoSec.classList.remove('show');
+  envWrap.style.display = '';
+  envelope.classList.remove('opened');
+});
+
+/* ════════════════════════════
+   배경 떠다니는 요소 추가
+════════════════════════════ */
+const extras = ['🌸','💕','⭐','🍀','✨','🌷','🌼','💫'];
+extras.forEach((em, i) => {
+  const el = document.createElement('div');
+  el.className = 'floaty';
+  el.textContent = em;
+  el.style.left = (Math.random() * 95) + '%';
+  el.style.animationDuration = (7 + Math.random()*8) + 's';
+  el.style.animationDelay = (Math.random()*10) + 's';
+  el.style.fontSize = (0.8 + Math.random()*0.8) + 'rem';
+  document.body.appendChild(el);
+});
+</script>
+
+</body>
+</html>
